@@ -64,7 +64,7 @@ func (t *TwitchBuilder) Build(_ctx context.Context, cfg *feed.Config) (*model.Fe
 			Period: "all",
 			Type:   "archive",
 			Sort:   "time",
-			First:  10,
+			First:  100,
 		})
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to get videos for user: %s", info.ItemID)
