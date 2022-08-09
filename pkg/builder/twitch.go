@@ -49,10 +49,20 @@ func (t *TwitchBuilder) Build(_ctx context.Context, cfg *feed.Config) (*model.Fe
 		feed.CoverArt = user.ProfileImageURL
 		feed.PubDate = user.CreatedAt.Time
 
+		isStreaming := false
+		streamID := ""
+		streams, err := t.client.GetStreams(&helix.StreamsParams{
+			UserIDs: []string{user.ID},
+		})
+		if len(streams.Data.Streams) > 0 {
+			isStreaming = true
+			streamID = streams.Data.Streams[0].ID
+		}
+
 		videos, err := t.client.GetVideos(&helix.VideosParams{
 			UserID: user.ID,
 			Period: "all",
-			Type:   "all",
+			Type:   "archive",
 			Sort:   "time",
 			First:  10,
 		})
@@ -63,35 +73,39 @@ func (t *TwitchBuilder) Build(_ctx context.Context, cfg *feed.Config) (*model.Fe
 		var added = 0
 		for _, video := range videos.Data.Videos {
 
-			date, err := time.Parse(time.RFC3339, video.PublishedAt)
-			if err != nil {
-				return nil, errors.Wrapf(err, "cannot parse PublishedAt time: %s", video.PublishedAt)
-			}
+			// Do not add the video of an ongoing stream because it will be incomplete
+			if !isStreaming || video.StreamID != streamID {
 
-			replacer := strings.NewReplacer("%{width}", "300", "%{height}", "300")
-			thumbnailUrl := replacer.Replace(video.ThumbnailURL)
+				date, err := time.Parse(time.RFC3339, video.PublishedAt)
+				if err != nil {
+					return nil, errors.Wrapf(err, "cannot parse PublishedAt time: %s", video.PublishedAt)
+				}
 
-			duration, err := time.ParseDuration(video.Duration)
-			if err != nil {
-				return nil, errors.Wrapf(err, "cannot parse duration: %s", video.Duration)
-			}
-			durationSeconds := int64(duration.Seconds())
+				replacer := strings.NewReplacer("%{width}", "300", "%{height}", "300")
+				thumbnailUrl := replacer.Replace(video.ThumbnailURL)
 
-			feed.Episodes = append(feed.Episodes, &model.Episode{
-				ID:          video.ID,
-				Title:       fmt.Sprintf("%s (%s)", video.Title, date),
-				Description: video.Description,
-				Thumbnail:   thumbnailUrl,
-				Duration:    durationSeconds,
-				Size:        durationSeconds * 33013, // Very rough estimate
-				VideoURL:    video.URL,
-				PubDate:     date,
-				Status:      model.EpisodeNew,
-			})
+				duration, err := time.ParseDuration(video.Duration)
+				if err != nil {
+					return nil, errors.Wrapf(err, "cannot parse duration: %s", video.Duration)
+				}
+				durationSeconds := int64(duration.Seconds())
 
-			added++
-			if added >= feed.PageSize {
-				return feed, nil
+				feed.Episodes = append(feed.Episodes, &model.Episode{
+					ID:          video.ID,
+					Title:       fmt.Sprintf("%s (%s)", video.Title, date),
+					Description: video.Description,
+					Thumbnail:   thumbnailUrl,
+					Duration:    durationSeconds,
+					Size:        durationSeconds * 33013, // Very rough estimate
+					VideoURL:    video.URL,
+					PubDate:     date,
+					Status:      model.EpisodeNew,
+				})
+
+				added++
+				if added >= feed.PageSize {
+					return feed, nil
+				}
 			}
 
 		}
