@@ -92,7 +92,7 @@ func (t *TwitchBuilder) Build(_ctx context.Context, cfg *feed.Config) (*model.Fe
 
 				feed.Episodes = append(feed.Episodes, &model.Episode{
 					ID:          video.ID,
-					Title:       fmt.Sprintf("%s (%s)", video.Title, date),
+					Title:       fmt.Sprintf("%s (%s)", video.Title, date.Format("2006-01-02 15:04 UTC")),
 					Description: video.Description,
 					Thumbnail:   thumbnailUrl,
 					Duration:    durationSeconds,
