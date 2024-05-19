@@ -56,6 +56,19 @@ func ParseURL(link string) (model.Info, error) {
 		return info, nil
 	}
 
+	if strings.HasSuffix(parsed.Host, "twitch.tv") {
+		kind, id, err := parseTwitchURL(parsed)
+		if err != nil {
+			return model.Info{}, err
+		}
+
+		info.Provider = model.ProviderTwitch
+		info.LinkType = kind
+		info.ItemID = id
+
+		return info, nil
+	}
+
 	return model.Info{}, errors.New("unsupported URL host")
 }
 
@@ -183,6 +196,24 @@ func parseSoundcloudURL(parsed *url.URL) (model.Type, string, error) {
 	}
 
 	id := parts[3]
+
+	return kind, id, nil
+}
+
+func parseTwitchURL(parsed *url.URL) (model.Type, string, error) {
+	// - https://www.twitch.tv/samueletienne
+	path := parsed.EscapedPath()
+	parts := strings.Split(path, "/")
+	if len(parts) != 2 {
+		return "", "", errors.Errorf("invald twitch user path: %s", path)
+	}
+
+	kind := model.TypeUser
+
+	id := parts[1]
+	if id == "" {
+		return "", "", errors.New("invalid id")
+	}
 
 	return kind, id, nil
 }
