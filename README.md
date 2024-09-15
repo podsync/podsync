@@ -79,7 +79,8 @@ port = 8080
 
 [storage]
   [storage.local]
-  data_dir = "/data/podsync/"
+  # Don't change if you run podsync via docker
+  data_dir = "/app/data/"
 
 [tokens]
 youtube = "PASTE YOUR API KEY HERE"
@@ -128,17 +129,28 @@ Use the editor [Visual Studio Code](https://code.visualstudio.com/) and install 
 
 ### Run via Docker:
 ```
-$ docker pull mxpv/podsync:latest
+$ docker pull ghcr.io/mxpv/podsync:latest
 $ docker run \
     -p 8080:8080 \
     -v $(pwd)/data:/app/data/ \
     -v $(pwd)/config.toml:/app/config.toml \
-    mxpv/podsync:latest
+    ghcr.io/mxpv/podsync:latest
 ```
 
 ### Run via Docker Compose:
 ```
-$ docker-compose up
+$ cat docker-compose.yml 
+services:
+  podsync:
+    image: ghcr.io/mxpv/podsync
+    container_name: podsync
+    volumes:
+      - ./data:/app/data/
+      - ./config.toml:/app/config.toml
+    ports:
+      - 8080:8080
+
+$ docker compose up
 ```
 
 ## How to make a release
