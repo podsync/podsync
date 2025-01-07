@@ -1,21 +1,16 @@
 linters:
   enable:
-    - structcheck
-    - varcheck
     - staticcheck
     - unconvert
     - gofmt
     - goimports
-    - golint
+    - revive
     - ineffassign
-    - vet
+    - govet
     - unused
     - misspell
     - bodyclose
-    - interfacer
     - unconvert
-    - maligned
-    # - depguard
     - nakedret
     - prealloc
     - whitespace
@@ -24,6 +19,6 @@ linters:
 
 run:
   deadline: 3m
-  skip-dirs:
+  issues.exclude-dirs:
     - bin
     - docs

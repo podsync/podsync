@@ -158,7 +158,7 @@ func (v *VimeoBuilder) queryVideos(getVideos getVideosFunc, feed *model.Feed) er
 	}
 }
 
-func (v *VimeoBuilder) Build(ctx context.Context, cfg *feed.Config) (*model.Feed, error) {
+func (v *VimeoBuilder) Build(_ context.Context, cfg *feed.Config) (*model.Feed, error) {
 	info, err := ParseURL(cfg.URL)
 	if err != nil {
 		return nil, err

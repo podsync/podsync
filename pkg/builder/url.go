@@ -17,6 +17,19 @@ func ParseURL(link string) (model.Info, error) {
 
 	info := model.Info{}
 
+	if strings.HasSuffix(parsed.Host, "bilibili.com") {
+		kind, id, err := parseBilibiliURL(parsed)
+		if err != nil {
+			return model.Info{}, err
+		}
+
+		info.Provider = model.ProviderBilibili
+		info.LinkType = kind
+		info.ItemID = id
+
+		return info, nil
+	}
+
 	if strings.HasSuffix(parsed.Host, "youtube.com") {
 		kind, id, err := parseYoutubeURL(parsed)
 		if err != nil {
@@ -122,6 +135,31 @@ func parseYoutubeURL(parsed *url.URL) (model.Type, string, error) {
 		return kind, id, nil
 	}
 
+	return "", "", errors.New("unsupported link format")
+}
+
+func parseBilibiliURL(parsed *url.URL) (model.Type, string, error) {
+	// https://space.bilibili.com/7380321
+	// https://space.bilibili.com/7380321/channel/collectiondetail?sid=531853
+
+	subdomain := strings.Split(parsed.Host, ".")[0]
+	parts := strings.Split(parsed.EscapedPath(), "/")
+
+	if len(parts) <= 1 || subdomain != "space" {
+		return "", "", errors.New("invalid bilibili link path")
+	}
+	var kind model.Type
+	if len(parts) == 2 {
+		kind = model.TypeUser
+		return kind, parts[1], nil
+	} else if parts[2] == "channel" {
+		kind = model.TypeChannel
+		params, err := url.ParseQuery(parsed.RawQuery)
+		if err != nil {
+			return "", "", errors.New("invalid bilibili channel path")
+		}
+		return kind, parts[1] + ":" + params["sid"][0], nil
+	}
 	return "", "", errors.New("unsupported link format")
 }
 

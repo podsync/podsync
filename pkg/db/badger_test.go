@@ -104,7 +104,7 @@ func TestBadger_DeleteFeed(t *testing.T) {
 	assert.NoError(t, err)
 
 	called := 0
-	err = db.WalkFeeds(testCtx, func(feed *model.Feed) error {
+	err = db.WalkFeeds(testCtx, func(_ *model.Feed) error {
 		called++
 		return nil
 	})

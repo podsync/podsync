@@ -12,6 +12,7 @@ const (
 type Provider string
 
 const (
+	ProviderBilibili   = Provider("bilibili")
 	ProviderYoutube    = Provider("youtube")
 	ProviderVimeo      = Provider("vimeo")
 	ProviderSoundcloud = Provider("soundcloud")

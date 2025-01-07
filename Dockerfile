@@ -1,4 +1,4 @@
-FROM golang:1.20 as builder
+FROM golang:1.22 as builder
 
 ENV TAG="nightly"
 ENV COMMIT=""

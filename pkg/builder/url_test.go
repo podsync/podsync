@@ -9,6 +9,22 @@ import (
 	"github.com/mxpv/podsync/pkg/model"
 )
 
+func TestParseBililiURL(t *testing.T) {
+	link, _ := url.ParseRequestURI("https://space.bilibili.com/291222529")
+	// fmt.Print(link, "\n")
+	kind, id, err := parseBilibiliURL(link)
+	// fmt.Print(kind, id, err)
+	require.NoError(t, err)
+	require.Equal(t, model.TypeUser, kind)
+	require.Equal(t, "291222529", id)
+
+	link, _ = url.ParseRequestURI("https://space.bilibili.com/7380321/channel/collectiondetail?sid=531853")
+	kind, id, err = parseBilibiliURL(link)
+	require.NoError(t, err)
+	require.Equal(t, model.TypeChannel, kind)
+	require.Equal(t, "7380321:531853", id)
+}
+
 func TestParseYoutubeURL_Playlist(t *testing.T) {
 	link, _ := url.ParseRequestURI("https://www.youtube.com/playlist?list=PLCB9F975ECF01953C")
 	kind, id, err := parseYoutubeURL(link)
