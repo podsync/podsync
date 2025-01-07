@@ -104,14 +104,14 @@ func (m *mockS3API) PutObjectRequest(input *s3.PutObjectInput) (*request.Request
 	return req, &s3.PutObjectOutput{}
 }
 
-func (m *mockS3API) HeadObjectWithContext(ctx aws.Context, input *s3.HeadObjectInput, opts ...request.Option) (*s3.HeadObjectOutput, error) {
+func (m *mockS3API) HeadObjectWithContext(_ aws.Context, input *s3.HeadObjectInput, _ ...request.Option) (*s3.HeadObjectOutput, error) {
 	if _, ok := m.files[*input.Key]; ok {
 		return &s3.HeadObjectOutput{ContentLength: aws.Int64(int64(len(m.files[*input.Key])))}, nil
 	}
 	return nil, awserr.New("NotFound", "", nil)
 }
 
-func (m *mockS3API) DeleteObjectWithContext(ctx aws.Context, input *s3.DeleteObjectInput, opts ...request.Option) (*s3.DeleteObjectOutput, error) {
+func (m *mockS3API) DeleteObjectWithContext(_ aws.Context, input *s3.DeleteObjectInput, _ ...request.Option) (*s3.DeleteObjectOutput, error) {
 	if _, ok := m.files[*input.Key]; ok {
 		delete(m.files, *input.Key)
 		return &s3.DeleteObjectOutput{}, nil

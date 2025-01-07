@@ -219,9 +219,7 @@ func (u *Manager) downloadEpisodes(ctx context.Context, feedConfig *feed.Config)
 			}
 
 			continue
-		} else if os.IsNotExist(err) {
-			// Will download, do nothing here
-		} else {
+		} else if !os.IsNotExist(err) {
 			logger.WithError(err).Error("failed to stat file")
 			return err
 		}

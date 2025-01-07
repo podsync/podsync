@@ -16,7 +16,7 @@ type SoundCloudBuilder struct {
 	client *soundcloudapi.API
 }
 
-func (s *SoundCloudBuilder) Build(_ctx context.Context, cfg *feed.Config) (*model.Feed, error) {
+func (s *SoundCloudBuilder) Build(_ context.Context, cfg *feed.Config) (*model.Feed, error) {
 	info, err := ParseURL(cfg.URL)
 	if err != nil {
 		return nil, err

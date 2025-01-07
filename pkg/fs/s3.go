@@ -55,7 +55,7 @@ func NewS3(c S3Config) (*S3, error) {
 	}, nil
 }
 
-func (s *S3) Open(_name string) (http.File, error) {
+func (s *S3) Open(_ string) (http.File, error) {
 	return nil, errors.New("serving files from S3 is not supported")
 }
 

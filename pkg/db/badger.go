@@ -105,9 +105,7 @@ func (b *Badger) AddFeed(_ context.Context, feedID string, feed *model.Feed) err
 		for _, episode := range feed.Episodes {
 			episodeKey := b.getKey(episodePath, feedID, episode.ID)
 			err := b.setObj(txn, episodeKey, episode, false)
-			if err == nil || err == model.ErrAlreadyExists {
-				// Do nothing
-			} else {
+			if !(err == nil || err == model.ErrAlreadyExists) {
 				return errors.Wrapf(err, "failed to save episode %q", feedID)
 			}
 		}
@@ -226,7 +224,7 @@ func (b *Badger) DeleteEpisode(feedID, episodeID string) error {
 	})
 }
 
-func (b *Badger) WalkEpisodes(ctx context.Context, feedID string, cb func(episode *model.Episode) error) error {
+func (b *Badger) WalkEpisodes(_ context.Context, feedID string, cb func(episode *model.Episode) error) error {
 	return b.db.View(func(txn *badger.Txn) error {
 		return b.walkEpisodes(txn, feedID, cb)
 	})
@@ -274,9 +272,7 @@ func (b *Badger) setObj(txn *badger.Txn, key []byte, obj interface{}, overwrite 
 		_, err := txn.Get(key)
 		if err == nil {
 			return model.ErrAlreadyExists
-		} else if err == badger.ErrKeyNotFound {
-			// Key not found, do nothing
-		} else {
+		} else if err != badger.ErrKeyNotFound {
 			return errors.Wrap(err, "failed to check whether key exists")
 		}
 	}

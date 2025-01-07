@@ -21,7 +21,7 @@ func (b *BilibiliBuilder) queryFeed(feed *model.Feed, info *model.Info) error {
 	switch info.LinkType {
 	case model.TypeChannel:
 		//TODO channel surpport
-		return errors.New("Bilibili channel not supported.")
+		return errors.New("bilibili channel not supported")
 	case model.TypeUser:
 		// query user info
 		mid, err := strconv.Atoi(info.ItemID)
@@ -69,7 +69,7 @@ func (b *BilibiliBuilder) queryFeed(feed *model.Feed, info *model.Info) error {
 	}
 }
 
-func (b *BilibiliBuilder) Build(ctx context.Context, cfg *feed.Config) (*model.Feed, error) {
+func (b *BilibiliBuilder) Build(_ context.Context, cfg *feed.Config) (*model.Feed, error) {
 	info, err := ParseURL(cfg.URL)
 	if err != nil {
 		return nil, err

@@ -30,7 +30,7 @@ func (p timeSlice) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
 }
 
-func Build(_ctx context.Context, feed *model.Feed, cfg *Config, hostname string) (*itunes.Podcast, error) {
+func Build(_ context.Context, feed *model.Feed, cfg *Config, hostname string) (*itunes.Podcast, error) {
 	const (
 		podsyncGenerator = "Podsync generator (support us at https://github.com/mxpv/podsync)"
 		defaultCategory  = "TV & Film"
