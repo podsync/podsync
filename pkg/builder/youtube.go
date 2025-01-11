@@ -301,6 +301,11 @@ func (yt *YouTubeBuilder) queryVideoDescriptions(ctx context.Context, playlist m
 				image    = yt.selectThumbnail(snippet.Thumbnails, feed.Quality, videoID)
 			)
 
+			// Skip unreleased/airing Premiere videos
+			if snippet.LiveBroadcastContent == "upcoming" || snippet.LiveBroadcastContent == "live" {
+				continue
+			}
+
 			// Parse date added to playlist / publication date
 			dateStr := ""
 			playlistItem, ok := playlist[video.Id]
